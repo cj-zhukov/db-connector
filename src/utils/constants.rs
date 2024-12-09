@@ -1,0 +1,20 @@
+use std::{env as std_env, sync::LazyLock};
+
+use dotenvy::dotenv;
+
+pub const PG_TABLE_NAME: &str = "users";
+pub const PG_MAX_CONS: u32 = 10;
+
+pub static PG_DATABASE_URL: LazyLock<String> = LazyLock::new(|| {
+    dotenv().ok();
+    let secret = std_env::var(env::PG_DATABASE_URL_ENV_VAR)
+        .expect("DATABASE_URL_ENV_VAR must be set.");
+    if secret.is_empty() {
+        panic!("DATABASE_URL_ENV_VAR must not be empty.");
+    }
+    secret
+});
+
+pub mod env {
+    pub const PG_DATABASE_URL_ENV_VAR: &str = "PG_DATABASE_URL";
+}
