@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use secrecy::Secret;
 use sqlx::migrate::Migrator;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
@@ -32,14 +33,14 @@ impl PostgresDbBuilder {
             .connect(&self.url)
             .await?;
 
-        Ok(PostgresDb { pool, url: self.url })
+        Ok(PostgresDb { pool, url: Secret::new(self.url) })
     }
 }
 
 #[derive(Debug)]
 pub struct PostgresDb {
     pool: Pool<Postgres>,
-    pub url: String, // #TODO add Secret
+    pub url: Secret<String>, 
 }
 
 impl AsRef<Pool<Postgres>> for PostgresDb {
