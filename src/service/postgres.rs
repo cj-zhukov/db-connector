@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use secrecy::Secret;
+use secrecy::{ExposeSecret, Secret};
 use sqlx::migrate::Migrator;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
@@ -40,7 +40,7 @@ impl PostgresDbBuilder {
 #[derive(Debug)]
 pub struct PostgresDb {
     pool: Pool<Postgres>,
-    pub url: Secret<String>, 
+    url: Secret<String>, 
 }
 
 impl AsRef<Pool<Postgres>> for PostgresDb {
@@ -52,6 +52,10 @@ impl AsRef<Pool<Postgres>> for PostgresDb {
 impl PostgresDb {
     pub fn builder() -> PostgresDbBuilder {
         PostgresDbBuilder::default()
+    }
+
+    pub fn get_url(&self) -> &str {
+        self.url.expose_secret()
     }
 }
 

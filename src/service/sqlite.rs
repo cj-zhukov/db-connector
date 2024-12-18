@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use secrecy::Secret;
+use secrecy::{ExposeSecret, Secret};
 use sqlx::{migrate::Migrator, sqlite::SqlitePoolOptions, Pool, Row, Sqlite};
 
 use crate::domain::Database;
@@ -39,7 +39,7 @@ impl SqliteDbBuilder {
 #[derive(Debug)]
 pub struct SqliteDb {
     pool: Pool<Sqlite>,
-    pub url: Secret<String>,
+    url: Secret<String>,
 }
 
 impl AsRef<Pool<Sqlite>> for SqliteDb {
@@ -51,6 +51,10 @@ impl AsRef<Pool<Sqlite>> for SqliteDb {
 impl SqliteDb {
     pub fn builder() -> SqliteDbBuilder {
         SqliteDbBuilder::default()
+    }
+
+    pub fn get_url(&self) -> &str {
+        self.url.expose_secret()
     }
 }
 
